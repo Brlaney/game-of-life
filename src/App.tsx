@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import produce from 'immer'
 import './scss/App.scss';
 
-const numRows = 50;
+const numRows = 38;
 const numCols = 50;
 
 const operations = [
@@ -16,15 +16,19 @@ const operations = [
   [-1, 0]
 ];
 
+const generateEmptyGrid = () => {
+  const rows = [];
+  for (let i = 0; i < numRows; i++) {
+    rows.push(Array.from(Array(numCols), () => 0))
+  }
+
+  return rows;
+}
+
 
 const App: React.FC = () => {
   const [grid, setGrid] = useState(() => {
-    const rows = [];
-    for (let i = 0; i < numRows; i++) {
-      rows.push(Array.from(Array(numCols), () => 0))
-    }
-
-    return rows;
+    return generateEmptyGrid();
   });
 
   const [running, setRunning] = useState(false);
@@ -59,18 +63,49 @@ const App: React.FC = () => {
         }
       });
     });
-    setTimeout(runSimulation, 1000);
+    setTimeout(runSimulation, 100);
   }, []);
 
   return (
     <>
-      <button
-        onClick={() => {
-          setRunning(!running)
+      <div
+        style={{
+          padding: '0 0.33rem 0.66rem 0.33rem',
+          margin: '0.22rem'
         }}
       >
-        {running ? 'stop' : 'start'}
-      </button>
+        <button
+          onClick={() => {
+            setRunning(!running);
+            if (!running) {
+              runningRef.current = true;
+              runSimulation();
+            }
+          }}
+        >
+          {running ? 'stop' : 'start'}
+        </button>
+        <button
+          onClick={() => {
+            setGrid(generateEmptyGrid());
+          }}
+        >
+          Clear
+        </button>
+        <button
+          onClick={() => {
+            const rows = [];
+            for (let i = 0; i < numRows; i++) {
+              rows.push(
+                Array.from(Array(numCols), () => (Math.random() > 0.8 ? 1 : 0))
+              );
+            }
+            setGrid(rows);
+          }}
+        >
+          Random
+        </button>
+      </div>
       <div
         style={{
           width: '100vw',
