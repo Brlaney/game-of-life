@@ -2,8 +2,12 @@ import React, { useState, useRef, useCallback } from 'react';
 import produce from 'immer'
 import './scss/App.scss';
 
-const numRows = 38;
-const numCols = 50;
+let numRows = 38;
+let numCols = 50;
+
+interface Props {
+  onChange: () => void;
+}
 
 const operations = [
   [0, 1],
@@ -27,9 +31,26 @@ const generateEmptyGrid = () => {
 
 
 const App: React.FC = () => {
+  // Declare state variables for number of rows, n
+  // and number of columns, m. Set the initial state.
+  const [n, setN] = useState(numRows);
+  const [m, setM] = useState(numCols);
+
   const [grid, setGrid] = useState(() => {
     return generateEmptyGrid();
   });
+
+  function handleChange1 (event: number) {
+    setN({value: event.target.value});
+  }
+
+  // function handleChange1(e: any) {
+  //   setN(e);
+  // }
+
+  // function handleChange2(e: any) {
+  //   setM(e);
+  // }
 
   const [running, setRunning] = useState(false);
 
@@ -42,7 +63,7 @@ const App: React.FC = () => {
     }
 
     setGrid(g => {
-      return produce(g, gridCopy => {
+      return produce(g, (gridCopy: number[][]) => {
         for (let i = 0; i < numRows; i++) {
           for (let k = 0; k < numCols; k++) {
             let neighbors = 0;
@@ -105,6 +126,18 @@ const App: React.FC = () => {
         >
           Random
         </button>
+        <input
+          name='n'
+          type='number'
+          value={n}
+          onChange={handleChange1}
+        />
+        <input
+          name='m'
+          type='number'
+          value={m}
+          onChange={handleChange2}
+        />
       </div>
       <div
         style={{
@@ -118,7 +151,7 @@ const App: React.FC = () => {
             <div
               key={`${i}-${k}`}
               onClick={() => {
-                const newGrid = produce(grid, gridCopy => {
+                const newGrid = produce(grid, (gridCopy: number[][]) => {
                   gridCopy[i][k] = grid[i][k] ? 0 : 1;
                 });
                 setGrid(newGrid);
